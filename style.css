@@ -1,0 +1,610 @@
+:root {
+    --primary-bg: #1a1a2e; /* Midnight Blue Dark */
+    --secondary-bg: #16213e; /* Darker Midnight Blue */
+    --card-bg: #0f0f1d;    /* Even Darker Midnight Blue */
+    --text-color: #e0e0e0; /* Light Gray */
+    --accent-color: #00bcd4; /* Cyan/Turquoise (Asosiy rang) */
+    --hover-color: #0097a7;  /* Darker Cyan for hover */
+    --active-status: #a3e635; /* Green for Active */
+    --finished-status: #ef4444; /* Red for Error/Finished */
+    --border-color: rgba(0, 188, 212, 0.3); /* Transparent accent for borders */
+    --warning-color: #ffc107; /* Yellow for warnings */
+    --success-color: #28a745; /* Green for success messages */
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+header {
+    background-color: var(--card-bg);
+    padding: 20px 0;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+header h1 {
+    margin: 0;
+    color: var(--accent-color);
+    font-weight: 700;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0 0;
+}
+
+nav ul li {
+    display: inline-block;
+    margin: 0 20px;
+}
+
+nav ul li a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+    padding: 5px 0;
+}
+
+nav ul li a:hover {
+    color: var(--accent-color);
+}
+
+main {
+    flex-grow: 1;
+    padding: 20px 0;
+    margin: 20px auto;
+    background-color: var(--secondary-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+main .container {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+h2 {
+    color: var(--accent-color);
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.2em;
+}
+
+.contest-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.contest-card {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.contest-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    border-color: var(--accent-color);
+}
+
+.contest-card h3 {
+    color: var(--accent-color);
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.6em;
+    text-align: center;
+}
+
+.contest-card p {
+    margin: 8px 0;
+    font-size: 0.98em;
+}
+
+.contest-card p strong {
+    color: var(--text-color);
+}
+
+.contest-card .status {
+    font-weight: 600;
+}
+
+.contest-card .status.active {
+    color: var(--active-status);
+}
+
+.contest-card .status.finished {
+    color: var(--finished-status);
+}
+
+/* Contest Detail Section */
+#contest-detail-section {
+    padding: 30px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background-color: var(--card-bg);
+}
+
+#contest-detail-section h2 {
+    margin-top: 0;
+    font-size: 2.5em;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+#contest-detail-content p {
+    margin-bottom: 12px;
+    font-size: 1.1em;
+}
+
+#contest-detail-content p strong {
+    color: var(--accent-color);
+}
+
+#contest-detail-content a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: text-decoration 0.3s ease;
+}
+
+#contest-detail-content a:hover {
+    text-decoration: underline;
+}
+
+.back-button {
+    background-color: var(--accent-color);
+    color: #fff;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.05em;
+    margin-bottom: 25px;
+    transition: background-color 0.3s ease;
+    font-weight: 600;
+}
+
+.back-button:hover {
+    background-color: var(--hover-color);
+}
+
+.hidden, .hidden-section {
+    display: none;
+}
+
+.info-message {
+    text-align: center;
+    grid-column: 1 / -1;
+    font-size: 1.2em;
+    color: #999;
+    padding: 40px 0;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    background-color: var(--card-bg);
+    color: #888;
+    font-size: 0.9em;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Captcha Overlay --- */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.captcha-modal {
+    background-color: var(--secondary-bg);
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.6);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    border: 1px solid var(--border-color);
+}
+
+.captcha-modal h2 {
+    color: var(--accent-color);
+    margin-bottom: 20px;
+}
+
+.captcha-modal .captcha-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.captcha-modal #captcha-number {
+    font-size: 2.5em;
+    font-weight: 700;
+    color: var(--active-status);
+    background-color: var(--card-bg);
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin-right: 15px;
+    min-width: 120px;
+}
+
+.captcha-modal #refresh-captcha {
+    background-color: var(--hover-color);
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2em;
+    transition: background-color 0.3s ease;
+}
+
+.captcha-modal #refresh-captcha:hover {
+    background-color: var(--accent-color);
+}
+
+.captcha-modal input[type="text"] {
+    width: calc(100% - 40px);
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    font-size: 1.1em;
+    text-align: center;
+}
+
+.captcha-modal button {
+    background-color: var(--accent-color);
+    color: #fff;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.captcha-modal button:hover {
+    background-color: var(--hover-color);
+}
+
+.captcha-modal .info-message {
+    font-size: 1em;
+    margin-top: 15px;
+    color: var(--warning-color); /* Error or info */
+}
+
+/* --- Spin Wheel Section --- */
+#spin-wheel-section {
+    text-align: center;
+    padding: 30px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background-color: var(--card-bg);
+}
+
+.spin-wheel-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+#wheelCanvas {
+    border: 2px solid var(--accent-color);
+    border-radius: 50%;
+    background-color: #0f0f1d;
+    transition: transform 4s cubic-bezier(0.25, 0.1, 0.25, 1); /* Aylanish animatsiyasi */
+}
+
+#spinButton {
+    background-color: var(--accent-color);
+    color: #fff;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2em;
+    font-weight: 700;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+#spinButton:hover:not(:disabled) {
+    background-color: var(--hover-color);
+    transform: translateY(-2px);
+}
+
+#spinButton:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+#spinResult {
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-top: 10px;
+    color: var(--accent-color);
+}
+
+#spinResult.error {
+    color: var(--finished-status);
+}
+
+#spinResult.success {
+    color: var(--success-color);
+}
+
+#currentBalance, #freeSpinsToday, #extraSpins, #dailyLimit {
+    color: var(--active-status);
+    font-weight: 700;
+}
+
+/* --- Profile Section --- */
+#profile-section {
+    padding: 30px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background-color: var(--card-bg);
+}
+
+#profile-content p {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+
+#profile-content p strong {
+    color: var(--accent-color);
+}
+
+#prizesWonList {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+#prizesWonList li {
+    background-color: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95em;
+}
+
+#prizesWonList li span {
+    color: var(--active-status);
+    font-weight: 600;
+}
+
+.withdraw-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--border-color);
+}
+
+.withdraw-section h3 {
+    color: var(--accent-color);
+    margin-bottom: 15px;
+}
+
+.withdraw-section input[type="number"] {
+    width: calc(100% - 100px); /* Adjust based on button width */
+    max-width: 200px;
+    padding: 10px 15px;
+    margin-right: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
+    font-size: 1em;
+    -moz-appearance: textfield; /* Remove arrows from number input in Firefox */
+}
+
+.withdraw-section input[type="number"]::-webkit-outer-spin-button,
+.withdraw-section input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+
+.withdraw-section button {
+    background-color: var(--accent-color);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.withdraw-section button:hover:not(:disabled) {
+    background-color: var(--hover-color);
+}
+
+.withdraw-section button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+#withdrawMessage {
+    margin-top: 15px;
+    font-size: 1em;
+}
+
+/* --- Admin Panel --- */
+#admin-panel-section {
+    padding: 30px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background-color: var(--card-bg);
+}
+
+.admin-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+    align-items: center;
+}
+
+.admin-controls input,
+.admin-controls select,
+.admin-controls button {
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
+    font-size: 1em;
+}
+
+.admin-controls button {
+    background-color: var(--accent-color);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.admin-controls button:hover {
+    background-color: var(--hover-color);
+}
+
+#adminUsersTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#adminUsersTable th,
+#adminUsersTable td {
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    text-align: left;
+    font-size: 0.9em;
+}
+
+#adminUsersTable th {
+    background-color: var(--secondary-bg);
+    color: var(--accent-color);
+}
+
+#adminUsersTable tbody tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.1); /* Slight stripe */
+}
+
+#adminUsersTable tbody tr:hover {
+    background-color: rgba(0, 188, 212, 0.05); /* Hover effect */
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .contest-grid {
+        grid-template-columns: 1fr;
+    }
+    header h1 {
+        font-size: 1.8em;
+    }
+    nav ul li {
+        margin: 0 10px;
+    }
+    h2 {
+        font-size: 1.8em;
+    }
+    #contest-detail-section h2 {
+        font-size: 2em;
+    }
+    .captcha-modal {
+        padding: 20px;
+    }
+    .captcha-modal #captcha-number {
+        font-size: 2em;
+    }
+    .admin-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .admin-controls input, .admin-controls select, .admin-controls button {
+        width: 100%;
+        margin-right: 0;
+    }
+    .withdraw-section input[type="number"] {
+        width: calc(100% - 20px);
+        margin-bottom: 10px;
+        margin-right: 0;
+    }
+    .withdraw-section button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 15px;
+    }
+    header h1 {
+        font-size: 1.5em;
+    }
+    nav ul li {
+        display: block;
+        margin: 10px 0;
+    }
+    h2 {
+        font-size: 1.5em;
+    }
+    .back-button {
+        padding: 10px 20px;
+        font-size: 0.95em;
+    }
+    #contest-detail-section h2 {
+        font-size: 1.8em;
+    }
+    #contest-detail-content p {
+        font-size: 1em;
+    }
+    .captcha-modal #captcha-number {
+        font-size: 1.8em;
+    }
+}
