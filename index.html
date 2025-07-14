@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFT Konkurslari va Omad G'ildiragi</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="captcha-overlay" class="overlay">
+        <div class="captcha-modal">
+            <h2>Xush Kelibsiz!</h2>
+            <p>Iltimos, robot emasligingizni tasdiqlash uchun sonni kiriting.</p>
+            <div class="captcha-display">
+                <span id="captcha-number"></span>
+                <button id="refresh-captcha">🔄</button>
+            </div>
+            <input type="text" id="captcha-input" placeholder="Sonni kiriting..." maxlength="4">
+            <button id="verify-captcha">Tasdiqlash</button>
+            <p id="captcha-message" class="info-message"></p>
+        </div>
+    </div>
+
+    <header>
+        <div class="container">
+            <h1>NFT Konkurslari</h1>
+            <nav>
+                <ul>
+                    <li><a href="#" id="show-all-contests">Barcha Konkurslar</a></li>
+                    <li><a href="#" id="show-spin-wheel">Omad G'ildiragi</a></li>
+                    <li><a href="#" id="show-profile">Profil</a></li>
+                    <li><a href="#" id="show-admin-panel" class="hidden">Admin Panel</a></li> 
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="contest-list-section" class="active-section">
+            <h2>Faol Konkurslar</h2>
+            <div id="contest-list" class="contest-grid">
+                <p id="loading-message" class="info-message">Konkurslar yuklanmoqda...</p>
+                <p id="no-contests-message" class="info-message" style="display: none;">Hozircha faol konkurslar mavjud emas.</p>
+            </div>
+        </section>
+
+        <section id="contest-detail-section" class="hidden-section">
+            <button id="back-to-list" class="back-button">⬅️ Orqaga</button>
+            <div id="contest-detail-content"></div>
+        </section>
+
+        <section id="spin-wheel-section" class="hidden-section">
+            <h2>Omad G'ildiragi</h2>
+            <div class="spin-wheel-container">
+                <canvas id="wheelCanvas" width="350" height="350"></canvas>
+                <button id="spinButton">Aylantirish</button>
+                <p id="spinResult" class="info-message"></p>
+                <p>Joriy balans: <span id="currentBalance">0</span> TON</p>
+                <p>Bepul urinishlar: <span id="freeSpinsToday">0</span> / <span id="dailyLimit">2</span></p>
+                <p>Qo'shimcha urinishlar: <span id="extraSpins">0</span></p>
+            </div>
+        </section>
+
+        <section id="profile-section" class="hidden-section">
+            <h2>Mening Profilim</h2>
+            <div id="profile-content">
+                <p><strong>Foydalanuvchi ID:</strong> <span id="profileUserId">Noma'lum</span></p>
+                <p><strong>Joriy balans:</strong> <span id="profileBalance">0</span> TON</p>
+                <h3>Yutgan yutuqlarim:</h3>
+                <ul id="prizesWonList">
+                    <li class="info-message">Yutuqlar yuklanmoqda...</li>
+                </ul>
+                <div class="withdraw-section">
+                    <h3>Pul yechib olish</h3>
+                    <input type="number" id="withdrawAmount" placeholder="Miqdorni kiriting (TON)" min="0.001" step="0.001">
+                    <button id="withdrawButton">Yechib olish</button>
+                    <p id="withdrawMessage" class="info-message"></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="admin-panel-section" class="hidden-section">
+            <h2>Admin Panel</h2>
+            <p>Foydalanuvchilarga aylantirish imkoniyatlarini boshqarish.</p>
+            <div class="admin-controls">
+                <input type="text" id="adminUserIdInput" placeholder="Foydalanuvchi ID">
+                <select id="adminSpinTypeSelect">
+                    <option value="free">Bepul urinish</option>
+                    <option value="extra">Qo'shimcha urinish</option>
+                </select>
+                <input type="number" id="adminChangeAmountInput" placeholder="Miqdor (+/-)">
+                <button id="adminUpdateSpinsButton">Yangilash</button>
+                <p id="adminMessage" class="info-message"></p>
+            </div>
+            <h3>Foydalanuvchilar ro'yxati (Balans va Urinishlar)</h3>
+            <table id="adminUsersTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Balans</th>
+                        <th>Bepul</th>
+                        <th>Qo'shimcha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="5" class="info-message">Yuklanmoqda...</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 NFT Konkurslari. Barcha huquqlar himoyalangan.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
