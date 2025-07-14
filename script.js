@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const contestDetailSection = document.getElementById('contest-detail-section');
     const spinWheelSection = document.getElementById('spin-wheel-section');
     const profileSection = document.getElementById('profile-section');
-    const adminPanelSection = document.getElementById('admin-panel-section'); // YANGI ADMIN PANEL
+    const adminPanelSection = document.getElementById('admin-panel-section'); 
 
     const contestListContainer = document.getElementById('contest-list');
     const contestDetailContent = document.getElementById('contest-detail-content');
@@ -19,8 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const showAllContestsNav = document.getElementById('show-all-contests');
     const showSpinWheelNav = document.getElementById('show-spin-wheel');
-    const showProfileNav = document.getElementById('show-profile'); // YANGI PROFIL NAV
-    const showAdminPanelNav = document.getElementById('show-admin-panel'); // YANGI ADMIN PANEL NAV
+    const showProfileNav = document.getElementById('show-profile'); 
+    const showAdminPanelNav = document.getElementById('show-admin-panel'); 
 
     const loadingMessage = document.getElementById('loading-message');
     const noContestsMessage = document.getElementById('no-contests-message');
@@ -37,8 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = wheelCanvas.getContext('2d');
     let wheelDeg = 0;
     let spinning = false;
-    let prizesData = []; // API dan keladigan mukofotlar ma'lumoti
-    let currentUserId = null; // Foydalanuvchi IDsi, captcha o'tgandan keyin olinadi
+    let prizesData = []; 
+    let currentUserId = null; 
 
     // --- Profil elementlari ---
     const profileUserIdSpan = document.getElementById('profileUserId');
@@ -57,10 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const adminUsersTableBody = document.querySelector('#adminUsersTable tbody');
 
     // !!! MUHIM: BU YERNI O'ZGARTIRISHINGIZ KERAK !!!
-    // Sizning api.php faylingiz joylashgan URL manzilini kiriting.
-    // Misol: ''
-    // Yoki localhostda bo'lsa: 'http://localhost/your_bot_folder/api.php'
-    const API_BASE_URL = 'https://c546.coresuz.ru/app/api.php';'; // <--- BU YERNI O'ZGARTIRING
+    // API_BASE_URL hozirda api.php ning 15.5KB versiyasi joylashgan manzilga ishora qiladi.
+    const API_BASE_URL = 'https://c546.coresuz.ru/api.php/api.php'; // <--- BU YERNI YANGILADIM
 
     // Admin ID'si (Frontendda buni tekshirish xavfsiz emas, lekin navigatsiyani boshqarish uchun)
     const ADMIN_LOCAL_ID = '5780755613'; // <--- BU YERNI HAM ADMIN ID'INGIZ BILAN ALMASHTIRING
@@ -98,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Captcha funksiyalari ---
     async function generateAndDisplayCaptcha() {
         captchaMessage.textContent = 'Yuklanmoqda...';
+        captchaMessage.classList.remove('error', 'success'); // Xato/muvaffaqiyat klasslarini tozalash
         try {
             const response = await fetch(`${API_BASE_URL}?action=generate_captcha`, { method: 'POST' });
             const data = await response.json();
@@ -107,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 captchaInput.value = '';
                 captchaInput.focus();
             } else {
-                captchaMessage.textContent = 'Captcha generatsiyasida xato: ' + data.message;
+                captchaMessage.textContent = 'Captcha generatsiyasida xato: ' + (data.message || 'Noma\'lum xato');
                 captchaMessage.classList.add('error');
             }
         } catch (error) {
@@ -194,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     card.innerHTML = `
                         <h3>${contest.name}</h3>
                         <p><strong>NFT:</strong> <a href="${contest.nft_link}" target="_blank">Ko'rish</a></p>
-                        <p><strong>Ishtirokchilar:</strong> ${contest.participants.length}</p>
+                        <p><strong>Ishtirokchilar:</strong> ${contest.participants ? contest.participants.length : 0}</p>
                         <p><strong>Holati:</strong> <span class="status ${contest.status}">${contest.status === 'active' ? 'Faol' : 'Yakunlangan'}</span></p>
                         <p><strong>Yakunlanadi:</strong> ${formatContestEndTime(contest)}</p>
                     `;
@@ -237,10 +236,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p><strong>Konkurs ID:</strong> #${contest.id}</p>
                     <p><strong>NFT ssilkasi:</strong> <a href="${contest.nft_link}" target="_blank">${contest.nft_link}</a></p>
                     <p><strong>Majburiy obuna kanallari:</strong> ${channelsHtml}</p>
-                    <p><strong>Davomiyligi:</strong> ${contest.end_type === 'time' ? contest.duration_hours + ' soat' : contest.members_count + ' ishtirokchi'}</p>
+                    <p><strong>Davomiyligi:</strong> ${contest.end_type === 'time' ? contest.duration_hours + ' soat' : (contest.members_count || 0) + ' ishtirokchi'}</p>
                     <p><strong>Yuborilgan kanal:</strong> <a href="https://t.me/${contest.post_channel}" target="_blank">@${contest.post_channel}</a></p>
                     <p><strong>Ma'lumot:</strong> ${contest.description}</p>
-                    <p><strong>Ishtirokchilar:</strong> ${contest.participants.length}</p>
+                    <p><strong>Ishtirokchilar:</strong> ${contest.participants ? contest.participants.length : 0}</p>
                     <p><strong>Holati:</strong> <span class="status ${contest.status}">${contest.status === 'active' ? 'Faol' : 'Yakunlangan'}</span></p>
                     ${winnerInfo}
                     <p><strong>Qolgan vaqt:</strong> ${formatContestEndTime(contest)}</p>
@@ -260,10 +259,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (contest.end_type === 'members') {
-            return `Ishtirokchilar soni: ${contest.participants.length} / ${contest.members_count}`;
+            return `Ishtirokchilar soni: ${contest.participants ? contest.participants.length : 0} / ${contest.members_count}`;
         } else if (contest.end_type === 'time') {
             const now = Math.floor(Date.now() / 1000);
-            const remainingTime = contest.end_time - now;
+            const remainingTime = (contest.end_time || 0) - now; // end_time mavjudligini tekshirish
 
             if (remainingTime <= 0) {
                 return "Yakunlangan";
@@ -290,23 +289,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const WHEEL_COLORS = ['#FFC300', '#FF5733', '#C70039', '#900C3F', '#581845', '#4CAF50', '#2196F3', '#FF9800', '#8BC34A', '#E91E63', '#673AB7', '#00BCD4']; // Ko'proq ranglar
 
     async function drawWheel() {
+        // Ranglar CSS Custom Properties dan olinadi
+        const primaryBg = getComputedStyle(document.documentElement).getPropertyValue('--primary-bg');
+        const secondaryBg = getComputedStyle(document.documentElement).getPropertyValue('--secondary-bg');
+        const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color');
+        const finishedStatusColor = getComputedStyle(document.documentElement).getPropertyValue('--finished-status');
+
         const response = await fetch(`${API_BASE_URL}?action=get_admin_settings`);
         const adminData = await response.json();
         if (adminData.status === 'success' && adminData.data && adminData.data.spin_game && adminData.data.spin_game.prizes) {
             prizesData = adminData.data.spin_game.prizes;
-            dailyLimitSpan.textContent = adminData.data.spin_game.daily_free_spins || 2; // Bepul aylantirish limiti
+            dailyLimitSpan.textContent = adminData.data.spin_game.daily_free_spins || 2; 
         } else {
             console.error("Spin game settings could not be loaded. Using default prizes.");
             prizesData = [
                 {"name": "0.1 TON", "amount": 0.1, "type": "ton", "chance": 0.5},
                 {"name": "1 TON", "amount": 1, "type": "ton", "chance": 0.02},
                 {"name": "NFT GIFT LOLPOP", "type": "nft_gift", "chance": 0.01},
-                {"name": "Bot yasatish", "type": "bot_service", "chance": 0.05},
+                {"name": "Bot yasatish", "type" => "bot_service", "chance": 0.05},
                 {"name": "0.001 TON", "amount": 0.001, "type": "ton", "chance": 0.2},
                 {"name": "0.02 TON", "amount": 0.02, "type": "ton", "chance": 0.09},
                 {"name": "0.005 TON", "amount": 0.005, "type": "ton", "chance": 0.1},
-                {"name": "Yana bir marta aylantirish", "type": "extra_spin", "amount": 1, "chance": 5},
-                {"name": "Yana 2 marta aylantirish", "type": "extra_spin", "amount": 2, "chance": 1},
+                {"name": "Yana bir marta aylantirish imkoniyati", "type": "extra_spin", "amount": 1, "chance": 5},
+                {"name": "Yana 2 marta aylantirish imkoniyati", "type": "extra_spin", "amount": 2, "chance": 1},
                 {"name": "@ionuz kanalida bepul reklama", "type": "free_ad", "chance": 0.04},
                 {"name": "100 so'm bonus", "amount": 100, "type": "bonus_sum", "chance": 10},
                 {"name": "50 so'm bonus", "amount": 50, "type": "bonus_sum", "chance": 15},
@@ -348,14 +353,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // O'rtadagi doira
         ctx.beginPath();
         ctx.arc(wheelCanvas.width / 2, wheelCanvas.height / 2, 40, 0, 2 * Math.PI);
-        ctx.fillStyle = var(--secondary-bg);
+        ctx.fillStyle = secondaryBg; // CSS custom property dan olinadi
         ctx.fill();
-        ctx.strokeStyle = var(--accent-color);
+        ctx.strokeStyle = accentColor; // CSS custom property dan olinadi
         ctx.lineWidth = 3;
         ctx.stroke();
 
         ctx.font = '20px Poppins';
-        ctx.fillStyle = var(--accent-color);
+        ctx.fillStyle = accentColor; // CSS custom property dan olinadi
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('NFT', wheelCanvas.width / 2, wheelCanvas.height / 2 - 15);
@@ -363,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Ko'rsatkich (Pointer)
         ctx.beginPath();
-        ctx.fillStyle = var(--finished-status); /* Qizil rang */
+        ctx.fillStyle = finishedStatusColor; /* Qizil rang */
         ctx.moveTo(wheelCanvas.width / 2 - 10, 0);
         ctx.lineTo(wheelCanvas.width / 2 + 10, 0);
         ctx.lineTo(wheelCanvas.width / 2, 25);
@@ -385,7 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`${API_BASE_URL}?action=get_user_info&user_id=${currentUserId}`);
             const data = await response.json();
             if (data.status === 'success' && data.data) {
-                currentBalanceSpan.textContent = (data.data.balance || 0).toFixed(3); // TON uchun 3 xona
+                currentBalanceSpan.textContent = (data.data.balance || 0).toFixed(3); 
                 freeSpinsTodaySpan.textContent = data.data.free_spins_today || 0;
                 extraSpinsSpan.textContent = data.data.extra_spins || 0;
 
@@ -436,19 +441,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 // G'ildirakni aylantirish animatsiyasi
                 const segmentAngle = (2 * Math.PI) / prizesData.length;
                 let prizeIndex = prizesData.findIndex(p => p.name === prizeName);
-                if (prizeIndex === -1) prizeIndex = prizesData.length - 1; // Agar topilmasa "Hech narsa"ga moslashtirish
+                if (prizeIndex === -1) prizeIndex = prizesData.length - 1; 
 
-                // Aylantirish uchun random bir nuqtani tanlash
-                const randomOffset = (Math.random() * (segmentAngle - 0.1)) - (segmentAngle / 2 - 0.05); // Segment ichida kichik random siljish
+                const randomOffset = (Math.random() * (segmentAngle - 0.1)) - (segmentAngle / 2 - 0.05); 
                 const targetRotation = 360 * 5 + (360 - (prizeIndex * (360 / prizesData.length))) - (360 / prizesData.length / 2) + (randomOffset * (180 / Math.PI));
 
+                wheelCanvas.style.transition = 'transform 4s cubic-bezier(0.25, 0.1, 0.25, 1)';
                 wheelCanvas.style.transform = `rotate(${targetRotation}deg)`;
 
                 setTimeout(() => {
                     spinning = false;
-                    wheelCanvas.style.transition = 'none'; // Animatsiyadan keyin transitionni o'chirish
-                    wheelDeg = targetRotation % 360; // Joriy burchakni saqlash
-                    wheelCanvas.style.transform = `rotate(${wheelDeg}deg)`; // Yangi burchakni o'rnatish
+                    wheelCanvas.style.transition = 'none'; 
+                    wheelDeg = targetRotation % 360; 
+                    wheelCanvas.style.transform = `rotate(${wheelDeg}deg)`; 
 
                     spinResult.textContent = `Natija: ${data.message}`;
                     spinResult.classList.add('success');
@@ -456,14 +461,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     freeSpinsTodaySpan.textContent = data.free_spins_today;
                     extraSpinsSpan.textContent = data.extra_spins;
                     spinButton.disabled = !(data.free_spins_today > 0 || data.extra_spins > 0);
-                    if (!spinButton.disabled) spinResult.classList.remove('success'); // Agar yana aylantirsa, natijani tozalashga tayyorlash
-                }, 4000); // Animatsiya tugashini kutish
+                    if (!spinButton.disabled) spinResult.classList.remove('success'); 
+                }, 4000); 
             } else {
                 spinning = false;
                 spinButton.disabled = false;
                 spinResult.textContent = `Xatolik: ${data.message}`;
                 spinResult.classList.add('error');
-                fetchUserBalance(); // Balans va urinishlarni yangilash
+                fetchUserBalance(); 
             }
         } catch (error) {
             console.error('Aylantirishda xatolik yuz berdi:', error);
@@ -546,7 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 withdrawMessage.textContent = data.message;
                 withdrawMessage.classList.add('success');
                 profileBalanceSpan.textContent = (data.new_balance || 0).toFixed(3);
-                withdrawAmountInput.value = ''; // Inputni tozalash
+                withdrawAmountInput.value = ''; 
             } else {
                 withdrawMessage.textContent = data.message;
                 withdrawMessage.classList.add('error');
@@ -562,10 +567,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Admin Panel funksiyalari ---
     function checkAdminStatus() {
-        // Bu yerda foydalanuvchi haqiqatan ham admin ekanligini tekshirish kerak.
-        // Captchaga ADMIN_LOCAL_ID kiritilgan bo'lsa, admin panelini ko'rsatish
-        // Eslatma: Bu faqat frontenddagi vizual yashirish. Haqiqiy xavfsizlik backendda bo'lishi kerak.
-        if (currentUserId === ADMIN_LOCAL_ID) { // Agar bu o'rniga haqiqiy admin ID si bo'lsa
+        if (currentUserId === ADMIN_LOCAL_ID) { 
             showAdminPanelNav.classList.remove('hidden');
         } else {
             showAdminPanelNav.classList.add('hidden');
@@ -632,7 +634,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 adminMessage.classList.add('success');
                 adminUserIdInput.value = '';
                 adminChangeAmountInput.value = '';
-                fetchAdminUsersData(); // Jadvalni yangilash
+                fetchAdminUsersData(); 
             } else {
                 adminMessage.textContent = data.message;
                 adminMessage.classList.add('error');
@@ -673,7 +675,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     showAdminPanelNav.addEventListener('click', (e) => {
         e.preventDefault();
-        if (currentUserId !== ADMIN_LOCAL_ID) { // Faqat haqiqiy admin uchun
+        if (currentUserId !== ADMIN_LOCAL_ID) { 
             alert("Siz admin emassiz!");
             return;
         }
@@ -681,6 +683,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Sayt yuklanganda ---
-    generateAndDisplayCaptcha(); // Captchani ko'rsatish
-    // Sayt faqat captcha o'tgandan keyin ishga tushadi
-});
+    generateAndDisplayCaptcha(); 
+});    
