@@ -1,11 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- Umumiy DOM elementlari ---
-    const captchaOverlay = document.getElementById('captcha-overlay');
-    const captchaNumberSpan = document.getElementById('captcha-number');
-    const refreshCaptchaButton = document.getElementById('refresh-captcha');
-    const captchaInput = document.getElementById('captcha-input');
-    const verifyCaptchaButton = document.getElementById('verify-captcha');
-    const captchaMessage = document.getElementById('captcha-message');
+    // Captcha elementlari olib tashlanganligi sababli ularning o'zgaruvchilari ham yo'q
+    // const captchaOverlay = document.getElementById('captcha-overlay');
+    // const captchaNumberSpan = document.getElementById('captcha-number');
+    // const refreshCaptchaButton = document.getElementById('refresh-captcha');
+    // const captchaInput = document.getElementById('captcha-input');
+    // const verifyCaptchaButton = document.getElementById('verify-captcha');
+    // const captchaMessage = document.getElementById('captcha-message');
 
     const contestListSection = document.getElementById('contest-list-section');
     const contestDetailSection = document.getElementById('contest-detail-section');
@@ -38,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let wheelDeg = 0;
     let spinning = false;
     let prizesData = []; 
-    let currentUserId = null; 
+    let currentUserId = null; // Foydalanuvchi ID'si endi captcha orqali emas, boshqa yo'l bilan olinadi
 
     // --- Profil elementlari ---
     const profileUserIdSpan = document.getElementById('profileUserId');
@@ -56,12 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const adminMessage = document.getElementById('adminMessage');
     const adminUsersTableBody = document.querySelector('#adminUsersTable tbody');
 
-    // !!! MUHIM: BU YERNI O'ZGARTIRISHINGIZ KERAK !!!
-    // API_BASE_URL hozirda api.php ning 15.5KB versiyasi joylashgan manzilga ishora qiladi.
-    const API_BASE_URL = 'https://c546.coresuz.ru/api.php/api.php'; // <--- BU YERNI YANGILADIM
+    // !!! MUHIM: BU YERNI O'ZGARTIRDIK !!!
+    // API_BASE_URL endi siz ko'rsatgan yangi manzilga ishora qiladi.
+    const API_BASE_URL = 'https://c546.coresuz.ru/api.php'; 
 
     // Admin ID'si (Frontendda buni tekshirish xavfsiz emas, lekin navigatsiyani boshqarish uchun)
-    const ADMIN_LOCAL_ID = '5780755613'; // <--- BU YERNI HAM ADMIN ID'INGIZ BILAN ALMASHTIRING
+    const ADMIN_LOCAL_ID = '5780755613'; // <--- BU YERNI ADMIN ID'INGIZ BILAN ALMASHTIRING
 
     // --- Boshlang'ich funksiyalar va hodisalar ---
 
@@ -93,85 +94,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Captcha funksiyalari ---
-    async function generateAndDisplayCaptcha() {
-        captchaMessage.textContent = 'Yuklanmoqda...';
-        captchaMessage.classList.remove('error', 'success'); // Xato/muvaffaqiyat klasslarini tozalash
-        try {
-            const response = await fetch(`${API_BASE_URL}?action=generate_captcha`, { method: 'POST' });
-            const data = await response.json();
-            if (data.status === 'success') {
-                captchaNumberSpan.textContent = data.captcha;
-                captchaMessage.textContent = '';
-                captchaInput.value = '';
-                captchaInput.focus();
-            } else {
-                captchaMessage.textContent = 'Captcha generatsiyasida xato: ' + (data.message || 'Noma\'lum xato');
-                captchaMessage.classList.add('error');
-            }
-        } catch (error) {
-            console.error('Captcha generatsiyasida kutilmagan xato:', error);
-            captchaMessage.textContent = 'Server bilan aloqada xato. Iltimos, qayta urining.';
-            captchaMessage.classList.add('error');
-        }
-    }
+    // --- Captcha bilan bog'liq funksiyalar to'liq olib tashlandi ---
 
-    async function verifyCaptcha() {
-        const inputCode = captchaInput.value;
-        if (!inputCode) {
-            captchaMessage.textContent = 'Iltimos, sonni kiriting.';
-            captchaMessage.classList.add('error');
-            return;
-        }
-
-        verifyCaptchaButton.disabled = true;
-        captchaMessage.textContent = 'Tekshirilmoqda...';
-        captchaMessage.classList.remove('error', 'success');
-
-        try {
-            const response = await fetch(`${API_BASE_URL}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `action=verify_captcha&captcha_code=${inputCode}`
-            });
-            const data = await response.json();
-
-            if (data.status === 'success') {
-                captchaMessage.textContent = 'Tasdiqlandi! Saytga kirishingiz mumkin.';
-                captchaMessage.classList.add('success');
-                setTimeout(() => {
-                    captchaOverlay.style.display = 'none'; // Overlayni yashirish
-                    // Foydalanuvchi ID'sini olish (agar login tizimi bo'lsa, bu yerda olinadi)
-                    // Hozircha random ID yoki hardcode qilingan admin ID
-                    // Real loyihada bu yerda Telegram login vidjetidan olingan ID ishlatiladi
-                    currentUserId = 'TEST_USER_' + Math.floor(Math.random() * 10000000); // Test uchun random ID
-                    // Agar admin login qilsa, admin ID ni ishlatish
-                    // if (inputCode === 'ADMIN_PASSWORD_OR_CODE') { currentUserId = ADMIN_LOCAL_ID; } // Misol
-                    checkAdminStatus(); // Admin panelini ko'rsatish
-                    showSection('list'); // Asosiy sahifani ko'rsatish
-                }, 1000);
-            } else {
-                captchaMessage.textContent = data.message;
-                captchaMessage.classList.add('error');
-                generateAndDisplayCaptcha(); // Yangi captcha generatsiya qilish
-            }
-        } catch (error) {
-            console.error('Captcha tekshirishda kutilmagan xato:', error);
-            captchaMessage.textContent = 'Server bilan aloqada xato. Qayta urining.';
-            captchaMessage.classList.add('error');
-            generateAndDisplayCaptcha();
-        } finally {
-            verifyCaptchaButton.disabled = false;
-        }
-    }
-
-    refreshCaptchaButton.addEventListener('click', generateAndDisplayCaptcha);
-    verifyCaptchaButton.addEventListener('click', verifyCaptcha);
-    captchaInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            verifyCaptcha();
-        }
-    });
 
     // --- Konkurslar funksiyalari ---
     async function fetchContests() {
@@ -262,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return `Ishtirokchilar soni: ${contest.participants ? contest.participants.length : 0} / ${contest.members_count}`;
         } else if (contest.end_type === 'time') {
             const now = Math.floor(Date.now() / 1000);
-            const remainingTime = (contest.end_time || 0) - now; // end_time mavjudligini tekshirish
+            const remainingTime = (contest.end_time || 0) - now; 
 
             if (remainingTime <= 0) {
                 return "Yakunlangan";
@@ -286,10 +210,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Omad g'ildiragi funksiyalari ---
-    const WHEEL_COLORS = ['#FFC300', '#FF5733', '#C70039', '#900C3F', '#581845', '#4CAF50', '#2196F3', '#FF9800', '#8BC34A', '#E91E63', '#673AB7', '#00BCD4']; // Ko'proq ranglar
+    const WHEEL_COLORS = ['#FFC300', '#FF5733', '#C70039', '#900C3F', '#581845', '#4CAF50', '#2196F3', '#FF9800', '#8BC34A', '#E91E63', '#673AB7', '#00BCD4']; 
 
     async function drawWheel() {
-        // Ranglar CSS Custom Properties dan olinadi
         const primaryBg = getComputedStyle(document.documentElement).getPropertyValue('--primary-bg');
         const secondaryBg = getComputedStyle(document.documentElement).getPropertyValue('--secondary-bg');
         const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color');
@@ -306,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 {"name": "0.1 TON", "amount": 0.1, "type": "ton", "chance": 0.5},
                 {"name": "1 TON", "amount": 1, "type": "ton", "chance": 0.02},
                 {"name": "NFT GIFT LOLPOP", "type": "nft_gift", "chance": 0.01},
-                {"name": "Bot yasatish", "type" => "bot_service", "chance": 0.05},
+                {"name": "Bot yasatish", "type": "bot_service", "chance": 0.05},
                 {"name": "0.001 TON", "amount": 0.001, "type": "ton", "chance": 0.2},
                 {"name": "0.02 TON", "amount": 0.02, "type": "ton", "chance": 0.09},
                 {"name": "0.005 TON", "amount": 0.005, "type": "ton", "chance": 0.1},
@@ -339,36 +262,33 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fill();
             ctx.stroke();
 
-            // Matnni yozish
             ctx.save();
             ctx.translate(wheelCanvas.width / 2, wheelCanvas.height / 2);
-            ctx.rotate(startAngle + segmentAngle / 2 + Math.PI / numSegments); // Matnni segment o'rtasiga qo'yish
+            ctx.rotate(startAngle + segmentAngle / 2 + Math.PI / numSegments); 
             ctx.textAlign = 'right';
             ctx.fillStyle = '#fff';
             ctx.font = '12px Poppins';
-            ctx.fillText(prize.name, wheelCanvas.width / 2 - 10, 0); // O'rtadan biroz tashqariga
+            ctx.fillText(prize.name, wheelCanvas.width / 2 - 10, 0); 
             ctx.restore();
         });
 
-        // O'rtadagi doira
         ctx.beginPath();
         ctx.arc(wheelCanvas.width / 2, wheelCanvas.height / 2, 40, 0, 2 * Math.PI);
-        ctx.fillStyle = secondaryBg; // CSS custom property dan olinadi
+        ctx.fillStyle = secondaryBg; 
         ctx.fill();
-        ctx.strokeStyle = accentColor; // CSS custom property dan olinadi
+        ctx.strokeStyle = accentColor; 
         ctx.lineWidth = 3;
         ctx.stroke();
 
         ctx.font = '20px Poppins';
-        ctx.fillStyle = accentColor; // CSS custom property dan olinadi
+        ctx.fillStyle = accentColor; 
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('NFT', wheelCanvas.width / 2, wheelCanvas.height / 2 - 15);
         ctx.fillText('Spin', wheelCanvas.width / 2, wheelCanvas.height / 2 + 15);
 
-        // Ko'rsatkich (Pointer)
         ctx.beginPath();
-        ctx.fillStyle = finishedStatusColor; /* Qizil rang */
+        ctx.fillStyle = finishedStatusColor; 
         ctx.moveTo(wheelCanvas.width / 2 - 10, 0);
         ctx.lineTo(wheelCanvas.width / 2 + 10, 0);
         ctx.lineTo(wheelCanvas.width / 2, 25);
@@ -378,14 +298,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchUserBalance() {
         if (!currentUserId) {
-            currentBalanceSpan.textContent = "0";
-            freeSpinsTodaySpan.textContent = "0";
-            extraSpinsSpan.textContent = "0";
-            spinButton.disabled = true;
-            spinResult.textContent = 'Kirish uchun captcha kiritishingiz kerak.';
-            spinResult.classList.add('error');
-            return;
+            // Agar currentUserId mavjud bo'lmasa, uni test uchun yaratamiz
+            // Real loyihada bu yerda Telegram login vidjetidan olingan ID ishlatiladi
+            currentUserId = 'TEST_USER_' + Math.floor(Math.random() * 10000000); 
+            checkAdminStatus(); // Admin panelini ko'rsatish uchun tekshiruv
         }
+        
         try {
             const response = await fetch(`${API_BASE_URL}?action=get_user_info&user_id=${currentUserId}`);
             const data = await response.json();
@@ -438,7 +356,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const prizeName = data.prize_won;
                 const newBalance = data.new_balance;
 
-                // G'ildirakni aylantirish animatsiyasi
                 const segmentAngle = (2 * Math.PI) / prizesData.length;
                 let prizeIndex = prizesData.findIndex(p => p.name === prizeName);
                 if (prizeIndex === -1) prizeIndex = prizesData.length - 1; 
@@ -483,11 +400,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Profil funksiyalari ---
     async function fetchUserProfile() {
         if (!currentUserId) {
-            profileUserIdSpan.textContent = 'Noma\'lum';
-            profileBalanceSpan.textContent = '0';
-            prizesWonList.innerHTML = '<li class="info-message error">Foydalanuvchi ma\'lumotlari yuklanmadi (ID topilmadi).</li>';
-            withdrawButton.disabled = true;
-            return;
+            // Agar currentUserId mavjud bo'lmasa, uni test uchun yaratamiz
+            currentUserId = 'TEST_USER_' + Math.floor(Math.random() * 10000000); 
         }
 
         try {
@@ -567,6 +481,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Admin Panel funksiyalari ---
     function checkAdminStatus() {
+        // Bu yerda foydalanuvchi ID'si ADMIN_LOCAL_ID ga teng bo'lsa, admin panelini ko'rsatamiz
         if (currentUserId === ADMIN_LOCAL_ID) { 
             showAdminPanelNav.classList.remove('hidden');
         } else {
@@ -657,19 +572,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     showSpinWheelNav.addEventListener('click', (e) => {
         e.preventDefault();
-        if (!currentUserId) {
-            alert("Iltimos, avval captcha orqali saytga kiring.");
-            return;
-        }
+        // Captcha olib tashlangani uchun bu yerda ID tekshiruvi shart emas, chunki u avtomatik yaratiladi
         showSection('spin_wheel');
     });
 
     showProfileNav.addEventListener('click', (e) => {
         e.preventDefault();
-        if (!currentUserId) {
-            alert("Iltimos, avval captcha orqali saytga kiring.");
-            return;
-        }
+        // Captcha olib tashlangani uchun bu yerda ID tekshiruvi shart emas, chunki u avtomatik yaratiladi
         showSection('profile');
     });
 
@@ -682,6 +591,10 @@ document.addEventListener('DOMContentLoaded', () => {
         showSection('admin');
     });
 
-    // --- Sayt yuklanganda ---
-    generateAndDisplayCaptcha(); 
-});    
+    // --- Sayt yuklanganda ishlaydigan kod ---
+    // Captcha olib tashlangani uchun, sayt darhol yuklanadi
+    // Foydalanuvchi ID'sini bu yerda avtomatik yaratamiz (TEST MAQSADIDA!)
+    currentUserId = 'TEST_USER_' + Math.floor(Math.random() * 10000000); 
+    checkAdminStatus(); // Admin panelini ko'rsatish
+    showSection('list'); // Asosiy sahifani ko'rsatish
+});
